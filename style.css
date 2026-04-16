@@ -1,0 +1,307 @@
+/*
+Theme Name: Secret Flower Shop
+Theme URI: https://example.com/secret-flower-shop
+Author: Secret Flower Shop
+Author URI: https://example.com
+Description: A soft, elegant, beginner-friendly WordPress theme for a flower shop.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.6
+Requires PHP: 7.4
+Text Domain: secret-flower-shop
+*/
+
+:root {
+  --pink-50: #fff7fa;
+  --pink-200: #f9dbe7;
+  --pink-400: #e8a9c0;
+  --green-100: #eef7ee;
+  --green-400: #8db89a;
+  --text: #3f3a3d;
+  --white: #ffffff;
+  --shadow: 0 12px 24px rgba(102, 76, 92, 0.08);
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Georgia", "Times New Roman", serif;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--pink-50) 0%, var(--white) 35%, var(--green-100) 100%);
+  line-height: 1.6;
+}
+
+a {
+  color: #9d5274;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: #7b3f5a;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.site-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid #f0dde5;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.container {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.site-branding a {
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  color: #7a3656;
+  font-weight: 600;
+}
+
+.menu-toggle {
+  display: none;
+  border: 1px solid #e9cfd9;
+  background: #fff;
+  color: #74435b;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.primary-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.primary-menu a {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.header-search {
+  max-width: 260px;
+}
+
+.search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.search-form label {
+  flex: 1;
+}
+
+.search-field {
+  width: 100%;
+  border: 1px solid #ebd7df;
+  border-radius: 10px;
+  padding: 9px 11px;
+  background: #fff;
+}
+
+.search-submit,
+.btn {
+  background: #d991ae;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+.search-submit:hover,
+.btn:hover {
+  background: #c67797;
+}
+
+.site-main {
+  flex: 1;
+  padding: 34px 0 48px;
+}
+
+.hero {
+  background: linear-gradient(135deg, #fff 0%, #ffeef5 55%, #f1fbf2 100%);
+  border: 1px solid #f2dde6;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px 28px;
+  margin-bottom: 36px;
+}
+
+.hero h1 {
+  margin-top: 0;
+  font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+  line-height: 1.2;
+  color: #6f3550;
+}
+
+.section-title {
+  margin: 0 0 18px;
+  color: #6b3a52;
+  font-size: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid #f1dbe5;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.card-content {
+  padding: 16px;
+}
+
+.card h3 {
+  margin: 0 0 8px;
+  color: #6a344e;
+}
+
+.price {
+  margin: 8px 0 10px;
+  color: #3f7d57;
+  font-weight: 700;
+}
+
+.page-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 22px;
+}
+
+.content-area,
+.sidebar {
+  background: #fff;
+  border: 1px solid #f1dbe5;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.sidebar h2,
+.widget-title {
+  margin-top: 0;
+  color: #6a344e;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar li + li {
+  margin-top: 8px;
+}
+
+.site-footer {
+  background: #fff;
+  border-top: 1px solid #edd6df;
+  padding: 22px 0;
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  font-size: 0.95rem;
+}
+
+.entry-meta {
+  font-size: 0.9rem;
+  color: #7a6570;
+}
+
+.not-found {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .header-inner {
+    flex-wrap: wrap;
+  }
+
+  .menu-toggle {
+    display: inline-block;
+  }
+
+  .site-nav {
+    width: 100%;
+    display: none;
+  }
+
+  .site-nav.is-open {
+    display: block;
+  }
+
+  .primary-menu {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .header-search {
+    width: 100%;
+    max-width: none;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
