@@ -45,6 +45,17 @@ get_header();
                             <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
                             <p class="price"><?php echo esc_html( secret_flower_shop_get_price( get_the_ID() ) ); ?></p>
                             <?php the_excerpt(); ?>
+                            <button
+                                type="button"
+                                class="btn bag-button"
+                                data-bag-add
+                                data-title="<?php echo esc_attr( get_the_title() ); ?>"
+                                data-price="<?php echo esc_attr( secret_flower_shop_get_price( get_the_ID() ) ); ?>"
+                                data-image="<?php echo esc_url( get_the_post_thumbnail_url( get_the_ID(), 'medium' ) ); ?>"
+                                data-url="<?php echo esc_url( get_permalink() ); ?>"
+                            >
+                                <?php esc_html_e( 'Add to Bag', 'secret-flower-shop' ); ?>
+                            </button>
                         </div>
                     </article>
                 <?php endwhile; ?>

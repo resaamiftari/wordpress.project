@@ -300,6 +300,33 @@ function secret_flower_shop_get_price( $post_id ) {
 }
 
 /**
+ * Get a simple bag URL anchor.
+ *
+ * @return string
+ */
+function secret_flower_shop_get_bag_url() {
+    return '#shop-bag';
+}
+
+/**
+ * Enqueue a small data object for the front-end bag UI.
+ */
+function secret_flower_shop_inline_bag_data() {
+    wp_add_inline_script(
+        'secret-flower-shop-script',
+        'window.SecretFlowerShopBag = ' . wp_json_encode(
+            array(
+                'currencySymbol' => '$',
+                'emptyText'      => __( 'Your bag is empty.', 'secret-flower-shop' ),
+                'bagTitle'       => __( 'Your Flower Bag', 'secret-flower-shop' ),
+            )
+        ) . ';',
+        'before'
+    );
+}
+add_action( 'wp_enqueue_scripts', 'secret_flower_shop_inline_bag_data', 20 );
+
+/**
  * Handle dismiss action for the admin setup notice.
  */
 function secret_flower_shop_handle_notice_dismiss() {
@@ -336,8 +363,8 @@ function secret_flower_shop_admin_quick_guide_notice() {
         return;
     }
 
-    $new_post_url  = admin_url( 'post-new.php' );
-    $posts_url     = admin_url( 'edit.php' );
+    $new_post_url   = admin_url( 'post-new.php' );
+    $posts_url      = admin_url( 'edit.php' );
     $categories_url = admin_url( 'edit-tags.php?taxonomy=category' );
     $dismiss_url   = wp_nonce_url(
         add_query_arg( 'sfs_dismiss_notice', '1', admin_url() ),
@@ -347,8 +374,8 @@ function secret_flower_shop_admin_quick_guide_notice() {
     <div class="notice notice-info">
         <p><strong><?php esc_html_e( 'Secret Flower Shop Quick Guide', 'secret-flower-shop' ); ?></strong></p>
         <p>
-            <?php esc_html_e( 'To add products, create a Post and set Category to "Flowers".', 'secret-flower-shop' ); ?>
-            <?php esc_html_e( 'Then add a Featured Image and optional custom field: price (example: $35.00).', 'secret-flower-shop' ); ?>
+            <?php esc_html_e( 'Add Posts in the Flowers category to create flower products, then add a Featured Image and a price custom field.', 'secret-flower-shop' ); ?>
+            <?php esc_html_e( 'The theme shows an Add to Bag experience without a checkout system.', 'secret-flower-shop' ); ?>
         </p>
         <p>
             <a class="button button-primary" href="<?php echo esc_url( $new_post_url ); ?>"><?php esc_html_e( 'Add Flower Product', 'secret-flower-shop' ); ?></a>

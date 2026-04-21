@@ -44,6 +44,11 @@
             <div class="header-search">
                 <?php get_search_form(); ?>
             </div>
+
+            <a class="bag-link" href="#shop-bag" aria-controls="shop-bag">
+                <?php esc_html_e( 'Bag', 'secret-flower-shop' ); ?>
+                <span class="bag-count" data-bag-count>0</span>
+            </a>
         </div>
     </header>
 
