@@ -442,6 +442,37 @@ img {
   color: #7a6570;
 }
 
+.flower-gallery {
+  margin-bottom: 30px;
+}
+
+.flower-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.flower-gallery__item {
+  margin: 0;
+  border: 1px solid #f1dbe5;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.flower-gallery__item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.flower-gallery__item figcaption {
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 700;
+  color: #6a344e;
+}
+
 .not-found {
   text-align: center;
   padding: 30px 20px;
@@ -449,6 +480,10 @@ img {
 
 @media (max-width: 900px) {
   .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .flower-gallery__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -488,6 +523,10 @@ img {
   }
 
   .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flower-gallery__grid {
     grid-template-columns: 1fr;
   }
 

@@ -10,6 +10,25 @@ get_header();
 
 <div class="container page-layout">
     <section class="content-area">
+        <?php // Add image files to assets/images/flowers/: tulips.jpg, lilies.jpg, roses.jpg ?>
+        <section class="flower-gallery" aria-label="Featured flowers">
+            <h2 class="section-title"><?php esc_html_e( 'Featured Flowers', 'secret-flower-shop' ); ?></h2>
+            <div class="flower-gallery__grid">
+                <figure class="flower-gallery__item">
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/tulips.jpg' ); ?>" alt="Tulips" loading="lazy" />
+                    <figcaption><?php esc_html_e( 'Tulips', 'secret-flower-shop' ); ?></figcaption>
+                </figure>
+                <figure class="flower-gallery__item">
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/lilies.jpg' ); ?>" alt="Lilies" loading="lazy" />
+                    <figcaption><?php esc_html_e( 'Lilies', 'secret-flower-shop' ); ?></figcaption>
+                </figure>
+                <figure class="flower-gallery__item">
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/roses.jpg' ); ?>" alt="Roses" loading="lazy" />
+                    <figcaption><?php esc_html_e( 'Roses', 'secret-flower-shop' ); ?></figcaption>
+                </figure>
+            </div>
+        </section>
+
         <h1 class="section-title"><?php esc_html_e( 'Latest Stories', 'secret-flower-shop' ); ?></h1>
 
         <?php if ( have_posts() ) : ?>
