@@ -31,10 +31,15 @@ get_header();
         <?php if ( $featured_query->have_posts() ) : ?>
             <div class="grid">
                 <?php while ( $featured_query->have_posts() ) : $featured_query->the_post(); ?>
+                    <?php
+                    $card_image = has_post_thumbnail()
+                        ? get_the_post_thumbnail_url( get_the_ID(), 'medium_large' )
+                        : secret_flower_shop_get_fallback_flower_image( get_the_ID() );
+                    ?>
                     <article <?php post_class( 'card' ); ?>>
-                        <?php if ( has_post_thumbnail() ) : ?>
+                        <?php if ( $card_image ) : ?>
                             <a href="<?php the_permalink(); ?>">
-                                <?php the_post_thumbnail( 'medium_large' ); ?>
+                                <img src="<?php echo esc_url( $card_image ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" loading="lazy" />
                             </a>
                         <?php endif; ?>
                         <div class="card-content">
@@ -47,7 +52,7 @@ get_header();
                                 data-bag-add
                                 data-title="<?php echo esc_attr( get_the_title() ); ?>"
                                 data-price="<?php echo esc_attr( secret_flower_shop_get_price( get_the_ID() ) ); ?>"
-                                data-image="<?php echo esc_url( get_the_post_thumbnail_url( get_the_ID(), 'medium' ) ); ?>"
+                                data-image="<?php echo esc_url( $card_image ); ?>"
                                 data-url="<?php echo esc_url( get_permalink() ); ?>"
                             >
                                 <?php esc_html_e( 'Add to Bag', 'secret-flower-shop' ); ?>

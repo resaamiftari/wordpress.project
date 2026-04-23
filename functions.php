@@ -300,6 +300,40 @@ function secret_flower_shop_get_price( $post_id ) {
 }
 
 /**
+ * Resolve a fallback flower image URL from post title/content keywords.
+ *
+ * @param int $post_id Optional post ID.
+ * @return string
+ */
+function secret_flower_shop_get_fallback_flower_image( $post_id = 0 ) {
+    $post_id = $post_id ? (int) $post_id : get_the_ID();
+
+    if ( ! $post_id ) {
+        return '';
+    }
+
+    $title   = (string) get_the_title( $post_id );
+    $content = (string) get_post_field( 'post_content', $post_id );
+    $text    = strtolower( wp_strip_all_tags( $title . ' ' . $content ) );
+
+    $image_file = '';
+
+    if ( false !== strpos( $text, 'tulip' ) ) {
+        $image_file = 'tulips.png';
+    } elseif ( false !== strpos( $text, 'lily' ) || false !== strpos( $text, 'lilies' ) ) {
+        $image_file = 'lilies.png';
+    } elseif ( false !== strpos( $text, 'rose' ) || false !== strpos( $text, 'roses' ) ) {
+        $image_file = 'roses.png';
+    }
+
+    if ( '' === $image_file ) {
+        return '';
+    }
+
+    return get_template_directory_uri() . '/assets/images/flowers/' . $image_file;
+}
+
+/**
  * Get a simple bag URL anchor.
  *
  * @return string

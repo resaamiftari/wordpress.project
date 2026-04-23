@@ -10,20 +10,20 @@ get_header();
 
 <div class="container page-layout">
     <section class="content-area">
-        <?php // Add image files to assets/images/flowers/: tulips.jpg, lilies.jpg, roses.jpg ?>
+        <?php // Add image files to assets/images/flowers/: tulips.png, lilies.png, roses.png ?>
         <section class="flower-gallery" aria-label="Featured flowers">
             <h2 class="section-title"><?php esc_html_e( 'Featured Flowers', 'secret-flower-shop' ); ?></h2>
             <div class="flower-gallery__grid">
                 <figure class="flower-gallery__item">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/tulips.jpg' ); ?>" alt="Tulips" loading="lazy" />
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/tulips.png' ); ?>" alt="Tulips" loading="lazy" />
                     <figcaption><?php esc_html_e( 'Tulips', 'secret-flower-shop' ); ?></figcaption>
                 </figure>
                 <figure class="flower-gallery__item">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/lilies.jpg' ); ?>" alt="Lilies" loading="lazy" />
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/lilies.png' ); ?>" alt="Lilies" loading="lazy" />
                     <figcaption><?php esc_html_e( 'Lilies', 'secret-flower-shop' ); ?></figcaption>
                 </figure>
                 <figure class="flower-gallery__item">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/roses.jpg' ); ?>" alt="Roses" loading="lazy" />
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/roses.png' ); ?>" alt="Roses" loading="lazy" />
                     <figcaption><?php esc_html_e( 'Roses', 'secret-flower-shop' ); ?></figcaption>
                 </figure>
             </div>

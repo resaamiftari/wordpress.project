@@ -17,6 +17,7 @@ Text Domain: secret-flower-shop
   --pink-400: #e8a9c0;
   --green-100: #eef7ee;
   --green-400: #8db89a;
+  --flower-image-height: 260px;
   --text: #3f3a3d;
   --white: #ffffff;
   --shadow: 0 12px 24px rgba(102, 76, 92, 0.08);
@@ -221,6 +222,18 @@ img {
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
+}
+
+.card > a {
+  display: block;
+}
+
+.card > a img,
+.card > a img.wp-post-image {
+  width: 100% !important;
+  height: var(--flower-image-height) !important;
+  object-fit: cover;
+  object-position: center;
 }
 
 .card-content {
@@ -462,8 +475,9 @@ img {
 
 .flower-gallery__item img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: var(--flower-image-height);
   object-fit: cover;
+  object-position: center;
 }
 
 .flower-gallery__item figcaption {
@@ -479,6 +493,10 @@ img {
 }
 
 @media (max-width: 900px) {
+  :root {
+    --flower-image-height: 220px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -493,6 +511,10 @@ img {
 }
 
 @media (max-width: 720px) {
+  :root {
+    --flower-image-height: 200px;
+  }
+
   .header-inner {
     flex-wrap: wrap;
   }
