@@ -196,6 +196,7 @@ function secret_flower_shop_create_demo_flowers() {
         if ( $post_id && ! is_wp_error( $post_id ) ) {
             wp_set_post_terms( $post_id, array( (int) $flowers_term->term_id ), 'category' );
             update_post_meta( $post_id, 'price', $product['price'] );
+            update_post_meta( $post_id, 'price_value', secret_flower_shop_parse_price_value( $product['price'] ) );
         }
     }
 }
@@ -293,10 +294,247 @@ function secret_flower_shop_get_price( $post_id ) {
     $raw_price = get_post_meta( $post_id, 'price', true );
 
     if ( '' === $raw_price ) {
-        return __( '$29.00', 'secret-flower-shop' );
+        return secret_flower_shop_format_price( 29 );
     }
 
-    return wp_strip_all_tags( $raw_price );
+    $numeric_price = secret_flower_shop_parse_price_value( $raw_price );
+
+    if ( $numeric_price <= 0 ) {
+        return wp_strip_all_tags( $raw_price );
+    }
+
+    return secret_flower_shop_format_price( $numeric_price );
+}
+
+/**
+ * Parse a price-like string into a numeric value.
+ *
+ * @param string $raw_price Raw price value.
+ * @return float
+ */
+function secret_flower_shop_parse_price_value( $raw_price ) {
+    $clean_value = preg_replace( '/[^0-9.]+/', '', (string) $raw_price );
+
+    if ( '' === $clean_value ) {
+        return 0.0;
+    }
+
+    return (float) $clean_value;
+}
+
+/**
+ * Format a numeric price for display.
+ *
+ * @param float $price_value Numeric price.
+ * @return string
+ */
+function secret_flower_shop_format_price( $price_value ) {
+    return '$' . number_format_i18n( (float) $price_value, 2 );
+}
+
+/**
+ * Keep numeric price metadata in sync when products are saved.
+ *
+ * @param int $post_id Post ID.
+ */
+function secret_flower_shop_sync_price_meta( $post_id ) {
+    if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+        return;
+    }
+
+    if ( 'post' !== get_post_type( $post_id ) ) {
+        return;
+    }
+
+    $raw_price = get_post_meta( $post_id, 'price', true );
+    $price     = secret_flower_shop_parse_price_value( $raw_price );
+
+    if ( $price > 0 ) {
+        update_post_meta( $post_id, 'price_value', $price );
+    } else {
+        delete_post_meta( $post_id, 'price_value' );
+    }
+}
+add_action( 'save_post_post', 'secret_flower_shop_sync_price_meta' );
+
+/**
+ * One-time migration for older products missing numeric price metadata.
+ */
+function secret_flower_shop_backfill_price_meta() {
+    $is_backfilled = (bool) get_option( 'secret_flower_shop_price_backfill_done', false );
+
+    if ( $is_backfilled ) {
+        return;
+    }
+
+    $product_ids = get_posts(
+        array(
+            'post_type'      => 'post',
+            'posts_per_page' => -1,
+            'category_name'  => 'flowers',
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+        )
+    );
+
+    if ( ! empty( $product_ids ) ) {
+        foreach ( $product_ids as $product_id ) {
+            secret_flower_shop_sync_price_meta( (int) $product_id );
+        }
+    }
+
+    update_option( 'secret_flower_shop_price_backfill_done', 1 );
+}
+add_action( 'admin_init', 'secret_flower_shop_backfill_price_meta' );
+
+/**
+ * Read and sanitize shop filters from query parameters.
+ *
+ * @return array<string, mixed>
+ */
+function secret_flower_shop_get_shop_filters() {
+    $search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+    $sort   = isset( $_GET['sort'] ) ? sanitize_key( wp_unslash( $_GET['sort'] ) ) : 'newest';
+
+    $allowed_sorts = array( 'newest', 'price_asc', 'price_desc', 'title_asc' );
+    if ( ! in_array( $sort, $allowed_sorts, true ) ) {
+        $sort = 'newest';
+    }
+
+    $min_price = isset( $_GET['min_price'] ) ? secret_flower_shop_parse_price_value( wp_unslash( $_GET['min_price'] ) ) : 0;
+    $max_price = isset( $_GET['max_price'] ) ? secret_flower_shop_parse_price_value( wp_unslash( $_GET['max_price'] ) ) : 0;
+
+    if ( $max_price > 0 && $min_price > $max_price ) {
+        $swap      = $min_price;
+        $min_price = $max_price;
+        $max_price = $swap;
+    }
+
+    return array(
+        's'         => $search,
+        'sort'      => $sort,
+        'min_price' => $min_price,
+        'max_price' => $max_price,
+    );
+}
+
+/**
+ * Build WP_Query arguments for flower products with filters.
+ *
+ * @param array $overrides Optional custom arguments.
+ * @return array
+ */
+function secret_flower_shop_get_shop_query_args( $overrides = array() ) {
+    $filters = secret_flower_shop_get_shop_filters();
+
+    $args = array(
+        'post_type'      => 'post',
+        'posts_per_page' => 9,
+        'category_name'  => 'flowers',
+        'paged'          => 1,
+    );
+
+    if ( '' !== $filters['s'] ) {
+        $args['s'] = $filters['s'];
+    }
+
+    if ( $filters['min_price'] > 0 || $filters['max_price'] > 0 ) {
+        $meta_query = array(
+            array(
+                'key'     => 'price_value',
+                'type'    => 'NUMERIC',
+                'compare' => 'EXISTS',
+            ),
+        );
+
+        if ( $filters['min_price'] > 0 ) {
+            $meta_query[] = array(
+                'key'     => 'price_value',
+                'value'   => $filters['min_price'],
+                'type'    => 'NUMERIC',
+                'compare' => '>=',
+            );
+        }
+
+        if ( $filters['max_price'] > 0 ) {
+            $meta_query[] = array(
+                'key'     => 'price_value',
+                'value'   => $filters['max_price'],
+                'type'    => 'NUMERIC',
+                'compare' => '<=',
+            );
+        }
+
+        $args['meta_query'] = $meta_query;
+    }
+
+    switch ( $filters['sort'] ) {
+        case 'price_asc':
+            $args['meta_key'] = 'price_value';
+            $args['orderby']  = 'meta_value_num';
+            $args['order']    = 'ASC';
+            break;
+        case 'price_desc':
+            $args['meta_key'] = 'price_value';
+            $args['orderby']  = 'meta_value_num';
+            $args['order']    = 'DESC';
+            break;
+        case 'title_asc':
+            $args['orderby'] = 'title';
+            $args['order']   = 'ASC';
+            break;
+        default:
+            $args['orderby'] = 'date';
+            $args['order']   = 'DESC';
+            break;
+    }
+
+    return wp_parse_args( $overrides, $args );
+}
+
+/**
+ * Build simple storefront metrics.
+ *
+ * @return array<string, float|int>
+ */
+function secret_flower_shop_get_shop_metrics() {
+    $product_ids = get_posts(
+        array(
+            'post_type'      => 'post',
+            'posts_per_page' => -1,
+            'category_name'  => 'flowers',
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+        )
+    );
+
+    $count       = is_array( $product_ids ) ? count( $product_ids ) : 0;
+    $price_total = 0.0;
+    $min_price   = 0.0;
+    $max_price   = 0.0;
+
+    if ( ! empty( $product_ids ) ) {
+        foreach ( $product_ids as $product_id ) {
+            $price = (float) get_post_meta( (int) $product_id, 'price_value', true );
+
+            if ( $price <= 0 ) {
+                $price = secret_flower_shop_parse_price_value( get_post_meta( (int) $product_id, 'price', true ) );
+            }
+
+            if ( $price > 0 ) {
+                $price_total += $price;
+                $min_price    = ( 0 === $min_price ) ? $price : min( $min_price, $price );
+                $max_price    = max( $max_price, $price );
+            }
+        }
+    }
+
+    return array(
+        'count'     => $count,
+        'avg_price' => ( $count > 0 && $price_total > 0 ) ? ( $price_total / $count ) : 0,
+        'min_price' => $min_price,
+        'max_price' => $max_price,
+    );
 }
 
 /**

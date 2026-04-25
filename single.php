@@ -42,6 +42,46 @@ get_header();
                     >
                         <?php esc_html_e( 'Add to Bag', 'secret-flower-shop' ); ?>
                     </button>
+
+                    <?php
+                    $related_query = new WP_Query(
+                        array(
+                            'post_type'      => 'post',
+                            'posts_per_page' => 3,
+                            'category_name'  => 'flowers',
+                            'post__not_in'   => array( get_the_ID() ),
+                            'orderby'        => 'rand',
+                            'no_found_rows'  => true,
+                        )
+                    );
+                    ?>
+
+                    <?php if ( $related_query->have_posts() ) : ?>
+                        <section class="related-products" aria-label="<?php esc_attr_e( 'Related flowers', 'secret-flower-shop' ); ?>">
+                            <h2><?php esc_html_e( 'You May Also Like', 'secret-flower-shop' ); ?></h2>
+                            <div class="related-products__list">
+                                <?php while ( $related_query->have_posts() ) : $related_query->the_post(); ?>
+                                    <?php
+                                    $related_image = has_post_thumbnail()
+                                        ? get_the_post_thumbnail_url( get_the_ID(), 'thumbnail' )
+                                        : secret_flower_shop_get_fallback_flower_image( get_the_ID() );
+                                    ?>
+                                    <article class="related-product">
+                                        <?php if ( $related_image ) : ?>
+                                            <a href="<?php the_permalink(); ?>" class="related-product__image-link">
+                                                <img src="<?php echo esc_url( $related_image ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" loading="lazy" />
+                                            </a>
+                                        <?php endif; ?>
+                                        <div>
+                                            <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                                            <p class="price"><?php echo esc_html( secret_flower_shop_get_price( get_the_ID() ) ); ?></p>
+                                        </div>
+                                    </article>
+                                <?php endwhile; ?>
+                            </div>
+                        </section>
+                        <?php wp_reset_postdata(); ?>
+                    <?php endif; ?>
                 </article>
             <?php endwhile; ?>
         <?php endif; ?>

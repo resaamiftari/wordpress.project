@@ -34,7 +34,10 @@
         </div>
 
         <div class="shop-bag__footer">
-            <p class="shop-bag__note"><?php esc_html_e( 'This is a simple preview bag, not a checkout system.', 'secret-flower-shop' ); ?></p>
+            <p class="shop-bag__note">
+                <strong><?php esc_html_e( 'Subtotal:', 'secret-flower-shop' ); ?></strong>
+                <span data-bag-subtotal><?php echo esc_html( secret_flower_shop_format_price( 0 ) ); ?></span>
+            </p>
             <button type="button" class="btn btn--ghost" data-bag-clear><?php esc_html_e( 'Clear Bag', 'secret-flower-shop' ); ?></button>
         </div>
     </aside>

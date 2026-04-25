@@ -5,6 +5,7 @@
   var bagItems = document.querySelector('[data-bag-items]');
   var bagCount = document.querySelector('[data-bag-count]');
   var bagSummaryCount = document.querySelector('[data-bag-summary-count]');
+  var bagSubtotal = document.querySelector('[data-bag-subtotal]');
   var storageKey = 'secretFlowerShopBag';
   var memoryBag = [];
 
@@ -67,6 +68,31 @@
       .replace(/'/g, '&#39;');
   }
 
+  function parsePrice(value) {
+    var numeric = String(value || '').replace(/[^0-9.]+/g, '');
+    var parsed = parseFloat(numeric);
+
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  function formatPrice(value) {
+    var symbol = (window.SecretFlowerShopBag && window.SecretFlowerShopBag.currencySymbol) ? window.SecretFlowerShopBag.currencySymbol : '$';
+    return symbol + Number(value || 0).toFixed(2);
+  }
+
+  function getSubtotal(items) {
+    var subtotal = 0;
+    var i;
+    var qty;
+
+    for (i = 0; i < items.length; i += 1) {
+      qty = items[i].qty || 0;
+      subtotal += parsePrice(items[i].price) * qty;
+    }
+
+    return subtotal;
+  }
+
   function createPlaceholderImage(title) {
     var letter = String(title || 'F').trim().charAt(0).toUpperCase();
     var svg = [
@@ -99,6 +125,7 @@
   function renderBag() {
     var items = readBag();
     var count = getItemCount(items);
+    var subtotal = getSubtotal(items);
     var html = '';
     var i;
     var item;
@@ -111,6 +138,10 @@
 
     if (bagSummaryCount) {
       bagSummaryCount.textContent = String(count);
+    }
+
+    if (bagSubtotal) {
+      bagSubtotal.textContent = formatPrice(subtotal);
     }
 
     if (!bagItems) {
@@ -132,7 +163,13 @@
           '<img class="shop-bag__thumb" src="' + imageSrc + '" alt="' + escapeHtml(item.title) + '">' +
           '<div>' +
             '<h3>' + titleLink + '</h3>' +
-            '<p>' + escapeHtml(item.price) + ' &times; ' + String(item.qty || 1) + '</p>' +
+            '<p class="shop-bag__line-meta">' + escapeHtml(item.price) + ' &times; ' + String(item.qty || 1) + '</p>' +
+            '<div class="shop-bag__qty" role="group" aria-label="Quantity controls">' +
+              '<button type="button" data-bag-qty="decrease" data-qty-index="' + i + '" aria-label="Decrease quantity">-</button>' +
+              '<span>' + String(item.qty || 1) + '</span>' +
+              '<button type="button" data-bag-qty="increase" data-qty-index="' + i + '" aria-label="Increase quantity">+</button>' +
+            '</div>' +
+            '<p class="shop-bag__line-total">Line total: ' + formatPrice(parsePrice(item.price) * (item.qty || 1)) + '</p>' +
           '</div>' +
           '<button type="button" class="shop-bag__remove" data-remove-index="' + i + '" aria-label="Remove ' + escapeHtml(item.title) + '">&times;</button>' +
         '</div>';
@@ -184,6 +221,7 @@
     var target = event.target;
     var addButton = target.closest ? target.closest('[data-bag-add]') : null;
     var removeButton = target.closest ? target.closest('[data-remove-index]') : null;
+    var qtyButton = target.closest ? target.closest('[data-bag-qty]') : null;
     var bagLink = target.closest ? target.closest('[href="#shop-bag"]') : null;
     var clearButton = target.closest ? target.closest('[data-bag-clear]') : null;
     var closeButton = target.closest ? target.closest('[data-bag-close]') : null;
@@ -208,6 +246,31 @@
         writeBag(items);
         renderBag();
       }
+      return;
+    }
+
+    if (qtyButton) {
+      event.preventDefault();
+      var qtyIndex = Number(qtyButton.getAttribute('data-qty-index'));
+      var qtyAction = qtyButton.getAttribute('data-bag-qty');
+      var qtyItems = readBag();
+
+      if (qtyIndex >= 0 && qtyIndex < qtyItems.length) {
+        if (qtyAction === 'increase') {
+          qtyItems[qtyIndex].qty = (qtyItems[qtyIndex].qty || 1) + 1;
+        }
+
+        if (qtyAction === 'decrease') {
+          qtyItems[qtyIndex].qty = (qtyItems[qtyIndex].qty || 1) - 1;
+          if (qtyItems[qtyIndex].qty <= 0) {
+            qtyItems.splice(qtyIndex, 1);
+          }
+        }
+
+        writeBag(qtyItems);
+        renderBag();
+      }
+
       return;
     }
 

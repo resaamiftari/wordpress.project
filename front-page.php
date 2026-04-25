@@ -6,6 +6,8 @@
  */
 
 get_header();
+
+$shop_metrics = secret_flower_shop_get_shop_metrics();
 ?>
 
 <div class="container">
@@ -13,6 +15,29 @@ get_header();
         <h1><?php esc_html_e( 'Fresh Blossoms for Every Secret Moment', 'secret-flower-shop' ); ?></h1>
         <p><?php esc_html_e( 'Welcome to Secret Flower Shop, a gentle place for elegant bouquets and floral gifts.', 'secret-flower-shop' ); ?></p>
         <a class="btn" href="<?php echo esc_url( secret_flower_shop_get_shop_url() ); ?>"><?php esc_html_e( 'Shop Flowers', 'secret-flower-shop' ); ?></a>
+
+        <div class="hero-metrics" aria-label="<?php esc_attr_e( 'Shop highlights', 'secret-flower-shop' ); ?>">
+            <div class="hero-metric">
+                <strong><?php echo esc_html( number_format_i18n( (int) $shop_metrics['count'] ) ); ?></strong>
+                <span><?php esc_html_e( 'Flower Products', 'secret-flower-shop' ); ?></span>
+            </div>
+            <div class="hero-metric">
+                <strong><?php echo esc_html( secret_flower_shop_format_price( (float) $shop_metrics['avg_price'] ) ); ?></strong>
+                <span><?php esc_html_e( 'Average Price', 'secret-flower-shop' ); ?></span>
+            </div>
+            <div class="hero-metric">
+                <strong>
+                    <?php
+                    if ( $shop_metrics['min_price'] > 0 && $shop_metrics['max_price'] > 0 ) {
+                        echo esc_html( secret_flower_shop_format_price( (float) $shop_metrics['min_price'] ) . ' - ' . secret_flower_shop_format_price( (float) $shop_metrics['max_price'] ) );
+                    } else {
+                        echo esc_html( __( 'Seasonal', 'secret-flower-shop' ) );
+                    }
+                    ?>
+                </strong>
+                <span><?php esc_html_e( 'Price Range', 'secret-flower-shop' ); ?></span>
+            </div>
+        </div>
     </section>
 
     <section>
@@ -65,6 +90,21 @@ get_header();
         <?php else : ?>
             <p><?php esc_html_e( 'No flower products yet. Add posts to the "Flowers" category in the dashboard.', 'secret-flower-shop' ); ?></p>
         <?php endif; ?>
+    </section>
+
+    <section class="home-highlights" aria-label="<?php esc_attr_e( 'Store promises', 'secret-flower-shop' ); ?>">
+        <article class="home-highlight">
+            <h3><?php esc_html_e( 'Same-Day Bouquet Prep', 'secret-flower-shop' ); ?></h3>
+            <p><?php esc_html_e( 'Orders before noon are hand-arranged the same day for local delivery windows.', 'secret-flower-shop' ); ?></p>
+        </article>
+        <article class="home-highlight">
+            <h3><?php esc_html_e( 'Freshness Promise', 'secret-flower-shop' ); ?></h3>
+            <p><?php esc_html_e( 'Every stem is sourced in small batches and checked before arrangement.', 'secret-flower-shop' ); ?></p>
+        </article>
+        <article class="home-highlight">
+            <h3><?php esc_html_e( 'Signature Floral Notes', 'secret-flower-shop' ); ?></h3>
+            <p><?php esc_html_e( 'Each bouquet includes a care card and optional handwritten message.', 'secret-flower-shop' ); ?></p>
+        </article>
     </section>
 </div>
 
