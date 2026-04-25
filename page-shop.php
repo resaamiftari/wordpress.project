@@ -55,10 +55,14 @@ $shop_filters = secret_flower_shop_get_shop_filters();
             $paged = 1;
         }
 
+        $shop_unique_ids = secret_flower_shop_get_unique_flower_post_ids( 10 );
+
         $shop_query = new WP_Query(
             secret_flower_shop_get_shop_query_args(
                 array(
-                    'paged' => $paged,
+                    'paged'    => $paged,
+                    'post__in' => ! empty( $shop_unique_ids ) ? $shop_unique_ids : array( 0 ),
+                    'orderby'  => 'post__in',
                 )
             )
         );

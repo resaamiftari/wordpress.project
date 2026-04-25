@@ -149,36 +149,70 @@ function secret_flower_shop_create_demo_flowers() {
     $existing_products = get_posts(
         array(
             'post_type'      => 'post',
-            'posts_per_page' => 1,
+            'posts_per_page' => -1,
             'category_name'  => 'flowers',
             'fields'         => 'ids',
+            'no_found_rows'  => true,
         )
     );
 
+    // Delete all old demo flowers to regenerate with new ones
     if ( ! empty( $existing_products ) ) {
-        return;
+        foreach ( $existing_products as $product_id ) {
+            wp_delete_post( (int) $product_id, true );
+        }
     }
 
     $products = array(
         array(
-            'title'   => 'Classic Red Roses',
-            'content' => 'A timeless bouquet of velvety red roses, perfect for romantic gifts and special celebrations.',
-            'price'   => '$39.00',
+            'title'   => 'Lavender Serenity',
+            'content' => 'Soothing purple lavender bundles with a calming fragrance, perfect for relaxation and everyday elegance.',
+            'price'   => '€10.00',
         ),
         array(
-            'title'   => 'Soft Pink Tulips',
-            'content' => 'Fresh pink tulips with a delicate fragrance, arranged in a minimalist floral wrap.',
-            'price'   => '$31.00',
+            'title'   => 'Carnation Charm',
+            'content' => 'Vibrant carnations in mixed hues, long-lasting and ideal for any occasion or arrangement.',
+            'price'   => '€12.50',
         ),
         array(
             'title'   => 'White Lily Harmony',
             'content' => 'Elegant white lilies paired with soft greenery for a calm and graceful centerpiece.',
-            'price'   => '$36.00',
+            'price'   => '€15.00',
         ),
         array(
-            'title'   => 'Spring Garden Mix',
-            'content' => 'A seasonal blend of tulips, roses, and daisies in pastel tones for everyday joy.',
-            'price'   => '$34.00',
+            'title'   => 'Soft Pink Tulips',
+            'content' => 'Fresh pink tulips with a delicate fragrance, arranged in a minimalist floral wrap.',
+            'price'   => '€18.00',
+        ),
+        array(
+            'title'   => 'Bright Sunflower Sunshine',
+            'content' => 'Cheerful golden sunflowers that bring warmth and joy to any room, perfect for brightening up your day.',
+            'price'   => '€20.00',
+        ),
+        array(
+            'title'   => 'Luxe Dahlia Blush',
+            'content' => 'Stunning dahlia blooms in soft blush tones, ideal for weddings and sophisticated events.',
+            'price'   => '€24.00',
+        ),
+        array(
+            'title'   => 'Romantic Peony Arrangement',
+            'content' => 'Delicate peonies in full bloom, a classic choice for anniversaries and heartfelt moments.',
+            'price'   => '€28.00',
+        ),
+        array(
+            'title'   => 'Classic Red Roses',
+            'content' => 'A timeless bouquet of velvety red roses, perfect for romantic gifts and special celebrations.',
+            'price'   => '€32.00',
+        ),
+        array(
+            'title'   => 'Elegant Orchid Paradise',
+            'content' => 'Exotic orchids in pristine white and purple, rare and sophisticated for the discerning customer.',
+            'price'   => '€36.00',
+        ),
+        array(
+            'title'   => 'Hydrangea Elegance',
+            'content' => 'Majestic hydrangea blooms in dreamy blues and pinks, perfect for statement arrangements and special moments.',
+            'price'   => '€40.00',
         ),
     );
 
@@ -246,9 +280,10 @@ function secret_flower_shop_create_primary_menu() {
  * Run first-time setup for pages, menu, and sample products.
  */
 function secret_flower_shop_run_first_time_setup() {
-    $is_setup_done = (bool) get_option( 'secret_flower_shop_setup_done', false );
+    $current_version = '2.1';
+    $stored_version  = get_option( 'secret_flower_shop_setup_version', '0' );
 
-    if ( $is_setup_done ) {
+    if ( version_compare( $stored_version, $current_version, '>=' ) ) {
         return;
     }
 
@@ -258,7 +293,7 @@ function secret_flower_shop_run_first_time_setup() {
     secret_flower_shop_create_demo_flowers();
     secret_flower_shop_create_primary_menu();
 
-    update_option( 'secret_flower_shop_setup_done', 1 );
+    update_option( 'secret_flower_shop_setup_version', $current_version );
 }
 add_action( 'after_switch_theme', 'secret_flower_shop_run_first_time_setup' );
 add_action( 'admin_init', 'secret_flower_shop_run_first_time_setup' );
@@ -429,7 +464,7 @@ function secret_flower_shop_get_shop_query_args( $overrides = array() ) {
 
     $args = array(
         'post_type'      => 'post',
-        'posts_per_page' => 9,
+        'posts_per_page' => 10,
         'category_name'  => 'flowers',
         'paged'          => 1,
     );
@@ -538,7 +573,124 @@ function secret_flower_shop_get_shop_metrics() {
 }
 
 /**
+ * Get the canonical flower catalog used across the theme.
+ *
+ * @return array<int, array<string, string>>
+ */
+function secret_flower_shop_get_flower_catalog() {
+    return array(
+        array(
+            'slug'     => 'lavender',
+            'label'    => __( 'Lavender Serenity', 'secret-flower-shop' ),
+            'keyword'  => 'lavender',
+            'image'    => 'levender.png',
+        ),
+        array(
+            'slug'     => 'carnation',
+            'label'    => __( 'Carnation Charm', 'secret-flower-shop' ),
+            'keyword'  => 'carnation',
+            'image'    => 'carnations.png',
+        ),
+        array(
+            'slug'     => 'lily',
+            'label'    => __( 'White Lily Harmony', 'secret-flower-shop' ),
+            'keyword'  => 'lily',
+            'image'    => 'lilies.png',
+        ),
+        array(
+            'slug'     => 'tulip',
+            'label'    => __( 'Soft Pink Tulips', 'secret-flower-shop' ),
+            'keyword'  => 'tulip',
+            'image'    => 'tulips.png',
+        ),
+        array(
+            'slug'     => 'sunflower',
+            'label'    => __( 'Bright Sunflower Sunshine', 'secret-flower-shop' ),
+            'keyword'  => 'sunflower',
+            'image'    => 'sunflowers.png',
+        ),
+        array(
+            'slug'     => 'dahlia',
+            'label'    => __( 'Luxe Dahlia Blush', 'secret-flower-shop' ),
+            'keyword'  => 'dahlia',
+            'image'    => 'dahlias.png',
+        ),
+        array(
+            'slug'     => 'peony',
+            'label'    => __( 'Romantic Peony Arrangement', 'secret-flower-shop' ),
+            'keyword'  => 'peony',
+            'image'    => 'peonies.png',
+        ),
+        array(
+            'slug'     => 'rose',
+            'label'    => __( 'Classic Red Roses', 'secret-flower-shop' ),
+            'keyword'  => 'rose',
+            'image'    => 'roses.png',
+        ),
+        array(
+            'slug'     => 'orchid',
+            'label'    => __( 'Elegant Orchid Paradise', 'secret-flower-shop' ),
+            'keyword'  => 'orchid',
+            'image'    => 'orchids.png',
+        ),
+        array(
+            'slug'     => 'hydrangea',
+            'label'    => __( 'Hydrangea Elegance', 'secret-flower-shop' ),
+            'keyword'  => 'hydrangea',
+            'image'    => 'hydrangeas.png',
+        ),
+    );
+}
+
+/**
+ * Get one unique post per flower type based on the catalog order.
+ *
+ * @param int $limit Number of posts to return.
+ * @return array<int, int>
+ */
+function secret_flower_shop_get_unique_flower_post_ids( $limit = 10 ) {
+    $catalog      = secret_flower_shop_get_flower_catalog();
+    $flower_posts = get_posts(
+        array(
+            'post_type'      => 'post',
+            'posts_per_page' => -1,
+            'category_name'  => 'flowers',
+            'no_found_rows'  => true,
+            'orderby'        => 'title',
+            'order'          => 'ASC',
+        )
+    );
+
+    $selected_ids = array();
+    $used_ids     = array();
+
+    foreach ( $catalog as $flower ) {
+        if ( count( $selected_ids ) >= $limit ) {
+            break;
+        }
+
+        foreach ( $flower_posts as $flower_post ) {
+            if ( in_array( (int) $flower_post->ID, $used_ids, true ) ) {
+                continue;
+            }
+
+            $post_text = strtolower( wp_strip_all_tags( $flower_post->post_title . ' ' . $flower_post->post_content ) );
+
+            if ( false !== strpos( $post_text, $flower['keyword'] ) ) {
+                $selected_ids[] = (int) $flower_post->ID;
+                $used_ids[]     = (int) $flower_post->ID;
+                break;
+            }
+        }
+    }
+
+    return $selected_ids;
+}
+
+/**
  * Resolve a fallback flower image URL from post title/content keywords.
+ * Supports 10 flower types: tulips, lilies, roses, sunflowers, dahlias, peonies, orchids, carnations, lavender, hydrangeas.
+ * Add corresponding PNG files to assets/images/flowers/ directory.
  *
  * @param int $post_id Optional post ID.
  * @return string
@@ -562,6 +714,20 @@ function secret_flower_shop_get_fallback_flower_image( $post_id = 0 ) {
         $image_file = 'lilies.png';
     } elseif ( false !== strpos( $text, 'rose' ) || false !== strpos( $text, 'roses' ) ) {
         $image_file = 'roses.png';
+    } elseif ( false !== strpos( $text, 'sunflower' ) ) {
+        $image_file = 'sunflowers.png';
+    } elseif ( false !== strpos( $text, 'dahlia' ) ) {
+        $image_file = 'dahlias.png';
+    } elseif ( false !== strpos( $text, 'peony' ) || false !== strpos( $text, 'peonies' ) ) {
+        $image_file = 'peonies.png';
+    } elseif ( false !== strpos( $text, 'orchid' ) ) {
+        $image_file = 'orchids.png';
+    } elseif ( false !== strpos( $text, 'carnation' ) ) {
+        $image_file = 'carnations.png';
+    } elseif ( false !== strpos( $text, 'lavender' ) ) {
+        $image_file = 'levender.png';
+    } elseif ( false !== strpos( $text, 'hydrangea' ) ) {
+        $image_file = 'hydrangeas.png';
     }
 
     if ( '' === $image_file ) {

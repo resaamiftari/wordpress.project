@@ -10,23 +10,38 @@ get_header();
 
 <div class="container page-layout">
     <section class="content-area">
-        <?php // Add image files to assets/images/flowers/: tulips.png, lilies.png, roses.png ?>
         <section class="flower-gallery" aria-label="Featured flowers">
             <h2 class="section-title"><?php esc_html_e( 'Featured Flowers', 'secret-flower-shop' ); ?></h2>
-            <div class="flower-gallery__grid">
-                <figure class="flower-gallery__item">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/tulips.png' ); ?>" alt="Tulips" loading="lazy" />
-                    <figcaption><?php esc_html_e( 'Tulips', 'secret-flower-shop' ); ?></figcaption>
-                </figure>
-                <figure class="flower-gallery__item">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/lilies.png' ); ?>" alt="Lilies" loading="lazy" />
-                    <figcaption><?php esc_html_e( 'Lilies', 'secret-flower-shop' ); ?></figcaption>
-                </figure>
-                <figure class="flower-gallery__item">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/flowers/roses.png' ); ?>" alt="Roses" loading="lazy" />
-                    <figcaption><?php esc_html_e( 'Roses', 'secret-flower-shop' ); ?></figcaption>
-                </figure>
-            </div>
+            <?php
+            $flower_catalog_ids = secret_flower_shop_get_unique_flower_post_ids( 10 );
+            ?>
+
+            <?php if ( ! empty( $flower_catalog_ids ) ) : ?>
+                <div class="flower-gallery__grid">
+                    <?php foreach ( $flower_catalog_ids as $flower_post_id ) : ?>
+                        <?php
+                        $flower_image_url = has_post_thumbnail( $flower_post_id )
+                            ? get_the_post_thumbnail_url( $flower_post_id, 'large' )
+                            : secret_flower_shop_get_fallback_flower_image( $flower_post_id );
+                        $flower_label     = get_the_title( $flower_post_id );
+                        $flower_permalink = get_permalink( $flower_post_id );
+                        ?>
+                        <figure class="flower-gallery__item">
+                            <?php if ( $flower_image_url ) : ?>
+                                <a href="<?php echo esc_url( $flower_permalink ); ?>">
+                                    <img src="<?php echo esc_url( $flower_image_url ); ?>" alt="<?php echo esc_attr( $flower_label ); ?>" loading="lazy" />
+                                </a>
+                            <?php endif; ?>
+                            <figcaption>
+                                <strong><?php echo esc_html( $flower_label ); ?></strong><br />
+                                <a href="<?php echo esc_url( $flower_permalink ); ?>"><?php esc_html_e( 'View Flower', 'secret-flower-shop' ); ?></a>
+                            </figcaption>
+                        </figure>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <p><?php esc_html_e( 'No flower images found in assets/images/flowers.', 'secret-flower-shop' ); ?></p>
+            <?php endif; ?>
         </section>
 
         <h1 class="section-title"><?php esc_html_e( 'Latest Stories', 'secret-flower-shop' ); ?></h1>

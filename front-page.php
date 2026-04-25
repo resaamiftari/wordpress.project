@@ -44,17 +44,20 @@ $shop_metrics = secret_flower_shop_get_shop_metrics();
         <h2 class="section-title"><?php esc_html_e( 'Featured Flowers', 'secret-flower-shop' ); ?></h2>
 
         <?php
+        $featured_ids = secret_flower_shop_get_unique_flower_post_ids( 10 );
+
         $featured_query = new WP_Query(
             array(
                 'post_type'      => 'post',
-                'posts_per_page' => 3,
-                'category_name'  => 'flowers',
+                'post__in'       => ! empty( $featured_ids ) ? $featured_ids : array( 0 ),
+                'orderby'        => 'post__in',
+                'posts_per_page' => 10,
             )
         );
         ?>
 
         <?php if ( $featured_query->have_posts() ) : ?>
-            <div class="grid">
+            <div class="grid grid--featured-ten">
                 <?php while ( $featured_query->have_posts() ) : $featured_query->the_post(); ?>
                     <?php
                     $card_image = has_post_thumbnail()
