@@ -30,6 +30,8 @@ Text Domain: secret-flower-shop
   --btn-gray-200: #e7e8eb;
   --btn-gray-300: #d8dade;
   --muted: #6f7277;
+  --accent-taupe: #a88f74;
+  --accent-taupe-dark: #8e7660;
   --flower-image-height: 260px;
   --text: #3f3a3d;
   --white: #ffffff;
@@ -59,13 +61,13 @@ body {
 }
 
 a {
-  color: var(--teal-400);
+  color: var(--accent-taupe);
   text-decoration: none;
 }
 
 a:hover,
 a:focus {
-  color: var(--plum-600);
+  color: var(--accent-taupe-dark);
 }
 
 img {
@@ -295,7 +297,7 @@ img {
 
 .price {
   margin: 8px 0 10px;
-  color: var(--teal-400);
+  color: var(--accent-taupe-dark);
   font-weight: 700;
 }
 
