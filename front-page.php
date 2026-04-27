@@ -8,6 +8,21 @@
 get_header();
 
 $shop_metrics = secret_flower_shop_get_shop_metrics();
+$shop_url     = secret_flower_shop_get_shop_url();
+
+$occasion_links = secret_flower_shop_get_occasion_definitions();
+
+$seasonal_ids = secret_flower_shop_get_unique_flower_post_ids( 3 );
+$seasonal_ids = array_reverse( $seasonal_ids );
+
+$seasonal_query = new WP_Query(
+    array(
+        'post_type'      => 'post',
+        'post__in'       => ! empty( $seasonal_ids ) ? $seasonal_ids : array( 0 ),
+        'orderby'        => 'post__in',
+        'posts_per_page' => 3,
+    )
+);
 ?>
 
 <div class="container">
@@ -37,6 +52,20 @@ $shop_metrics = secret_flower_shop_get_shop_metrics();
                 </strong>
                 <span><?php esc_html_e( 'Price Range', 'secret-flower-shop' ); ?></span>
             </div>
+        </div>
+    </section>
+
+    <section class="home-occasions" aria-label="<?php esc_attr_e( 'Shop by occasion', 'secret-flower-shop' ); ?>">
+        <div class="home-occasions__head">
+            <h2 class="section-title"><?php esc_html_e( 'Shop by Occasion', 'secret-flower-shop' ); ?></h2>
+            <p><?php esc_html_e( 'Choose a mood, then discover bouquets that fit the moment.', 'secret-flower-shop' ); ?></p>
+        </div>
+        <div class="home-occasion-chips">
+            <?php foreach ( $occasion_links as $occasion_key => $occasion ) : ?>
+                <a class="home-occasion-chip" href="<?php echo esc_url( add_query_arg( 'occasion', $occasion_key, $shop_url ) ); ?>">
+                    <?php echo esc_html( $occasion['label'] ); ?>
+                </a>
+            <?php endforeach; ?>
         </div>
     </section>
 
@@ -95,6 +124,39 @@ $shop_metrics = secret_flower_shop_get_shop_metrics();
         <?php endif; ?>
     </section>
 
+    <section class="home-seasonal" aria-label="<?php esc_attr_e( 'Seasonal picks', 'secret-flower-shop' ); ?>">
+        <div class="home-seasonal__head">
+            <h2 class="section-title"><?php esc_html_e( 'Seasonal Picks', 'secret-flower-shop' ); ?></h2>
+            <a class="btn btn--ghost" href="<?php echo esc_url( $shop_url ); ?>"><?php esc_html_e( 'See Full Collection', 'secret-flower-shop' ); ?></a>
+        </div>
+
+        <?php if ( $seasonal_query->have_posts() ) : ?>
+            <div class="home-seasonal__list">
+                <?php while ( $seasonal_query->have_posts() ) : $seasonal_query->the_post(); ?>
+                    <?php
+                    $seasonal_image = has_post_thumbnail()
+                        ? get_the_post_thumbnail_url( get_the_ID(), 'medium' )
+                        : secret_flower_shop_get_fallback_flower_image( get_the_ID() );
+                    ?>
+                    <article class="home-seasonal__item">
+                        <a href="<?php the_permalink(); ?>" class="home-seasonal__thumb">
+                            <?php if ( $seasonal_image ) : ?>
+                                <img src="<?php echo esc_url( $seasonal_image ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" loading="lazy" />
+                            <?php endif; ?>
+                        </a>
+                        <div>
+                            <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                            <p class="price"><?php echo esc_html( secret_flower_shop_get_price( get_the_ID() ) ); ?></p>
+                        </div>
+                    </article>
+                <?php endwhile; ?>
+            </div>
+            <?php wp_reset_postdata(); ?>
+        <?php else : ?>
+            <p><?php esc_html_e( 'Seasonal picks will appear once flower products are available.', 'secret-flower-shop' ); ?></p>
+        <?php endif; ?>
+    </section>
+
     <section class="home-highlights" aria-label="<?php esc_attr_e( 'Store promises', 'secret-flower-shop' ); ?>">
         <article class="home-highlight">
             <h3><?php esc_html_e( 'Same-Day Bouquet Prep', 'secret-flower-shop' ); ?></h3>
@@ -108,6 +170,24 @@ $shop_metrics = secret_flower_shop_get_shop_metrics();
             <h3><?php esc_html_e( 'Signature Floral Notes', 'secret-flower-shop' ); ?></h3>
             <p><?php esc_html_e( 'Each bouquet includes a care card and optional handwritten message.', 'secret-flower-shop' ); ?></p>
         </article>
+    </section>
+
+    <section class="home-testimonials" aria-label="<?php esc_attr_e( 'Customer notes', 'secret-flower-shop' ); ?>">
+        <h2 class="section-title"><?php esc_html_e( 'What Customers Say', 'secret-flower-shop' ); ?></h2>
+        <div class="home-testimonials__grid">
+            <blockquote class="home-testimonial">
+                <p><?php esc_html_e( 'The bouquet looked even better than the photos and arrived perfectly fresh.', 'secret-flower-shop' ); ?></p>
+                <cite><?php esc_html_e( 'Maya R.', 'secret-flower-shop' ); ?></cite>
+            </blockquote>
+            <blockquote class="home-testimonial">
+                <p><?php esc_html_e( 'I ordered in the morning and it was delivered the same afternoon. Beautiful wrapping too.', 'secret-flower-shop' ); ?></p>
+                <cite><?php esc_html_e( 'Daniel K.', 'secret-flower-shop' ); ?></cite>
+            </blockquote>
+            <blockquote class="home-testimonial">
+                <p><?php esc_html_e( 'Their seasonal arrangement became the centerpiece of our dinner table.', 'secret-flower-shop' ); ?></p>
+                <cite><?php esc_html_e( 'Nora T.', 'secret-flower-shop' ); ?></cite>
+            </blockquote>
+        </div>
     </section>
 </div>
 

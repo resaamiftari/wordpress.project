@@ -486,10 +486,16 @@ add_action( 'admin_init', 'secret_flower_shop_backfill_price_meta' );
 function secret_flower_shop_get_shop_filters() {
     $search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
     $sort   = isset( $_GET['sort'] ) ? sanitize_key( wp_unslash( $_GET['sort'] ) ) : 'newest';
+    $occasion = isset( $_GET['occasion'] ) ? sanitize_key( wp_unslash( $_GET['occasion'] ) ) : '';
 
     $allowed_sorts = array( 'newest', 'price_asc', 'price_desc', 'title_asc' );
     if ( ! in_array( $sort, $allowed_sorts, true ) ) {
         $sort = 'newest';
+    }
+
+    $occasion_definitions = secret_flower_shop_get_occasion_definitions();
+    if ( '' !== $occasion && ! isset( $occasion_definitions[ $occasion ] ) ) {
+        $occasion = '';
     }
 
     $min_price = isset( $_GET['min_price'] ) ? secret_flower_shop_parse_price_value( wp_unslash( $_GET['min_price'] ) ) : 0;
@@ -504,9 +510,102 @@ function secret_flower_shop_get_shop_filters() {
     return array(
         's'         => $search,
         'sort'      => $sort,
+        'occasion'  => $occasion,
         'min_price' => $min_price,
         'max_price' => $max_price,
     );
+}
+
+/**
+ * Get available shop occasions and keyword definitions.
+ *
+ * @return array<string, array<string, mixed>>
+ */
+function secret_flower_shop_get_occasion_definitions() {
+    return array(
+        'birthday'     => array(
+            'label'    => __( 'Birthday Blooms', 'secret-flower-shop' ),
+            'keywords' => array( 'birthday', 'celebration', 'party', 'joyful' ),
+        ),
+        'anniversary'  => array(
+            'label'    => __( 'Anniversary', 'secret-flower-shop' ),
+            'keywords' => array( 'anniversary', 'romantic', 'love', 'classic' ),
+        ),
+        'sympathy'     => array(
+            'label'    => __( 'Sympathy', 'secret-flower-shop' ),
+            'keywords' => array( 'sympathy', 'peace', 'white', 'condolence' ),
+        ),
+        'thank-you'    => array(
+            'label'    => __( 'Thank You', 'secret-flower-shop' ),
+            'keywords' => array( 'thank', 'gratitude', 'appreciation', 'bright' ),
+        ),
+        'new-baby'     => array(
+            'label'    => __( 'New Baby', 'secret-flower-shop' ),
+            'keywords' => array( 'baby', 'soft', 'pastel', 'gentle' ),
+        ),
+        'just-because' => array(
+            'label'    => __( 'Just Because', 'secret-flower-shop' ),
+            'keywords' => array( 'seasonal', 'fresh', 'mixed', 'everyday' ),
+        ),
+    );
+}
+
+/**
+ * Get flower post IDs for a selected occasion with a minimum fallback count.
+ *
+ * @param string $occasion Occasion key.
+ * @param int    $limit Minimum number of IDs to return when possible.
+ * @return array<int, int>
+ */
+function secret_flower_shop_get_occasion_flower_post_ids( $occasion, $limit = 3 ) {
+    $occasion_definitions = secret_flower_shop_get_occasion_definitions();
+
+    if ( ! isset( $occasion_definitions[ $occasion ] ) ) {
+        return array();
+    }
+
+    $flower_posts = get_posts(
+        array(
+            'post_type'      => 'post',
+            'posts_per_page' => -1,
+            'category_name'  => 'flowers',
+            'no_found_rows'  => true,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        )
+    );
+
+    $keywords     = $occasion_definitions[ $occasion ]['keywords'];
+    $selected_ids = array();
+
+    foreach ( $flower_posts as $flower_post ) {
+        $post_text = strtolower( wp_strip_all_tags( $flower_post->post_title . ' ' . $flower_post->post_content ) );
+
+        foreach ( $keywords as $keyword ) {
+            if ( false !== strpos( $post_text, strtolower( $keyword ) ) ) {
+                $selected_ids[] = (int) $flower_post->ID;
+                break;
+            }
+        }
+    }
+
+    if ( count( $selected_ids ) < $limit ) {
+        $fallback_ids = secret_flower_shop_get_unique_flower_post_ids( max( 10, $limit ) );
+
+        foreach ( $fallback_ids as $fallback_id ) {
+            if ( in_array( (int) $fallback_id, $selected_ids, true ) ) {
+                continue;
+            }
+
+            $selected_ids[] = (int) $fallback_id;
+
+            if ( count( $selected_ids ) >= $limit ) {
+                break;
+            }
+        }
+    }
+
+    return array_slice( array_values( array_unique( $selected_ids ) ), 0, max( 1, (int) $limit ) );
 }
 
 /**

@@ -10,6 +10,7 @@
 get_header();
 
 $shop_filters = secret_flower_shop_get_shop_filters();
+$occasion_definitions = secret_flower_shop_get_occasion_definitions();
 ?>
 
 <div class="container page-layout">
@@ -21,6 +22,18 @@ $shop_filters = secret_flower_shop_get_shop_filters();
             <div class="shop-filters__field">
                 <label for="shop-search"><?php esc_html_e( 'Search Flowers', 'secret-flower-shop' ); ?></label>
                 <input id="shop-search" type="search" name="s" value="<?php echo esc_attr( $shop_filters['s'] ); ?>" placeholder="<?php esc_attr_e( 'Rose, tulip, lily...', 'secret-flower-shop' ); ?>" />
+            </div>
+
+            <div class="shop-filters__field">
+                <label for="shop-occasion"><?php esc_html_e( 'Occasion', 'secret-flower-shop' ); ?></label>
+                <select id="shop-occasion" name="occasion">
+                    <option value=""><?php esc_html_e( 'All Occasions', 'secret-flower-shop' ); ?></option>
+                    <?php foreach ( $occasion_definitions as $occasion_key => $occasion ) : ?>
+                        <option value="<?php echo esc_attr( $occasion_key ); ?>" <?php selected( $shop_filters['occasion'], $occasion_key ); ?>>
+                            <?php echo esc_html( $occasion['label'] ); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="shop-filters__field">
@@ -55,18 +68,40 @@ $shop_filters = secret_flower_shop_get_shop_filters();
             $paged = 1;
         }
 
-        $shop_unique_ids = secret_flower_shop_get_unique_flower_post_ids( 10 );
+        $shop_post_ids = array();
+        $query_orderby = '';
+
+        if ( '' !== $shop_filters['occasion'] ) {
+            $shop_post_ids = secret_flower_shop_get_occasion_flower_post_ids( $shop_filters['occasion'], 3 );
+            $query_orderby = 'post__in';
+        } else {
+            $shop_post_ids = secret_flower_shop_get_unique_flower_post_ids( 10 );
+            $query_orderby = 'post__in';
+        }
 
         $shop_query = new WP_Query(
             secret_flower_shop_get_shop_query_args(
                 array(
                     'paged'    => $paged,
-                    'post__in' => ! empty( $shop_unique_ids ) ? $shop_unique_ids : array( 0 ),
-                    'orderby'  => 'post__in',
+                    'post__in' => ! empty( $shop_post_ids ) ? $shop_post_ids : array( 0 ),
+                    'orderby'  => $query_orderby,
                 )
             )
         );
         ?>
+
+        <?php if ( '' !== $shop_filters['occasion'] ) : ?>
+            <?php if ( isset( $occasion_definitions[ $shop_filters['occasion'] ] ) ) : ?>
+                <p class="shop-occasion-note">
+                    <?php
+                    printf(
+                        esc_html__( 'Showing flowers for: %s', 'secret-flower-shop' ),
+                        esc_html( $occasion_definitions[ $shop_filters['occasion'] ]['label'] )
+                    );
+                    ?>
+                </p>
+            <?php endif; ?>
+        <?php endif; ?>
 
         <?php if ( $shop_query->have_posts() ) : ?>
             <div class="grid">
@@ -121,6 +156,10 @@ $shop_filters = secret_flower_shop_get_shop_filters();
 
                 if ( 'newest' !== $shop_filters['sort'] ) {
                     $query_params['sort'] = $shop_filters['sort'];
+                }
+
+                if ( '' !== $shop_filters['occasion'] ) {
+                    $query_params['occasion'] = $shop_filters['occasion'];
                 }
 
                 echo wp_kses_post(
