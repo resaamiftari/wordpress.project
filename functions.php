@@ -107,6 +107,10 @@ function secret_flower_shop_create_core_pages() {
             'post_title'   => 'About',
             'post_content' => 'Share your flower shop story here from the page editor.',
         ),
+        'delivery-care' => array(
+            'post_title'   => 'Delivery & Care',
+            'post_content' => 'Share your delivery times, service zones, and flower care tips here.',
+        ),
     );
 
     foreach ( $pages as $slug => $page_data ) {
@@ -121,6 +125,56 @@ function secret_flower_shop_create_core_pages() {
                 )
             );
         }
+    }
+}
+
+/**
+ * Ensure primary menu contains core page links.
+ */
+function secret_flower_shop_ensure_primary_menu_links() {
+    $locations = get_nav_menu_locations();
+
+    if ( empty( $locations['primary'] ) ) {
+        return;
+    }
+
+    $menu_id = (int) $locations['primary'];
+
+    if ( $menu_id < 1 ) {
+        return;
+    }
+
+    $menu_items = wp_get_nav_menu_items( $menu_id );
+    $linked_ids = array();
+
+    if ( ! empty( $menu_items ) && ! is_wp_error( $menu_items ) ) {
+        foreach ( $menu_items as $menu_item ) {
+            if ( 'page' === $menu_item->object ) {
+                $linked_ids[] = (int) $menu_item->object_id;
+            }
+        }
+    }
+
+    $page_slugs = array( 'home', 'shop', 'about', 'delivery-care' );
+
+    foreach ( $page_slugs as $slug ) {
+        $page = get_page_by_path( $slug );
+
+        if ( ! $page || in_array( (int) $page->ID, $linked_ids, true ) ) {
+            continue;
+        }
+
+        wp_update_nav_menu_item(
+            $menu_id,
+            0,
+            array(
+                'menu-item-title'     => $page->post_title,
+                'menu-item-object'    => 'page',
+                'menu-item-object-id' => (int) $page->ID,
+                'menu-item-type'      => 'post_type',
+                'menu-item-status'    => 'publish',
+            )
+        );
     }
 }
 
@@ -252,7 +306,7 @@ function secret_flower_shop_create_primary_menu() {
         return;
     }
 
-    $page_slugs = array( 'home', 'shop', 'about' );
+    $page_slugs = array( 'home', 'shop', 'about', 'delivery-care' );
 
     foreach ( $page_slugs as $slug ) {
         $page = get_page_by_path( $slug );
@@ -280,7 +334,7 @@ function secret_flower_shop_create_primary_menu() {
  * Run first-time setup for pages, menu, and sample products.
  */
 function secret_flower_shop_run_first_time_setup() {
-    $current_version = '2.1';
+    $current_version = '2.2';
     $stored_version  = get_option( 'secret_flower_shop_setup_version', '0' );
 
     if ( version_compare( $stored_version, $current_version, '>=' ) ) {
@@ -292,11 +346,13 @@ function secret_flower_shop_run_first_time_setup() {
     secret_flower_shop_set_front_page();
     secret_flower_shop_create_demo_flowers();
     secret_flower_shop_create_primary_menu();
+    secret_flower_shop_ensure_primary_menu_links();
 
     update_option( 'secret_flower_shop_setup_version', $current_version );
 }
 add_action( 'after_switch_theme', 'secret_flower_shop_run_first_time_setup' );
 add_action( 'admin_init', 'secret_flower_shop_run_first_time_setup' );
+add_action( 'admin_init', 'secret_flower_shop_ensure_primary_menu_links' );
 
 /**
  * Resolve the best available Shop URL.

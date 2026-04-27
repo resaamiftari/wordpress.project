@@ -12,27 +12,28 @@ Text Domain: secret-flower-shop
 */
 
 :root {
-  --pink-baby: #ffe4ef;
-  --pink-soft: #f7b6d2;
-  --pink-hard: #e7549f;
-  --blush-50: #fff7fa;
-  --peach-100: #ffe9dd;
-  --sun-200: #ffd98f;
-  --mint-100: #e9f8f1;
-  --teal-400: #2f7f83;
-  --blue-200: #dcecff;
-  --berry-500: #a24b6f;
-  --plum-600: #6b3658;
-  --ink: #2f2a31;
-  --accent-warm: #d7834f;
+  --pink-baby: #ffffff;
+  --pink-soft: #f4efe8;
+  --pink-hard: #d9d9d9;
+  --blush-50: #ffffff;
+  --peach-100: #f4efe8;
+  --sun-200: #ececec;
+  --mint-100: #f5f5f5;
+  --teal-400: #5f6368;
+  --blue-200: #ececec;
+  --berry-500: #6b7076;
+  --plum-600: #4f545a;
+  --ink: #333333;
+  --accent-warm: #8a8f95;
   --btn-gray-600: #5f6368;
   --btn-gray-700: #4f545a;
   --btn-gray-200: #e7e8eb;
   --btn-gray-300: #d8dade;
+  --muted: #6f7277;
   --flower-image-height: 260px;
   --text: #3f3a3d;
   --white: #ffffff;
-  --shadow: 0 12px 24px rgba(63, 70, 102, 0.12);
+  --shadow: 0 12px 24px rgba(70, 70, 70, 0.12);
   --radius: 14px;
 }
 
@@ -50,10 +51,10 @@ body {
   font-family: "Georgia", "Times New Roman", serif;
   color: var(--text);
   background:
-    radial-gradient(circle at 12% 10%, var(--pink-baby), transparent 34%),
-    radial-gradient(circle at 90% 14%, var(--pink-soft), transparent 28%),
-    radial-gradient(circle at 65% 88%, rgba(231, 84, 159, 0.22), transparent 30%),
-    linear-gradient(180deg, #fff7fb 0%, var(--pink-baby) 42%, #ffd3e9 100%);
+    radial-gradient(circle at 12% 10%, #ffffff, transparent 34%),
+    radial-gradient(circle at 90% 14%, #f4efe8, transparent 28%),
+    radial-gradient(circle at 65% 88%, rgba(217, 217, 217, 0.35), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f6f2ec 42%, #ececec 100%);
   line-height: 1.6;
 }
 
@@ -80,8 +81,8 @@ img {
 }
 
 .site-header {
-  background: linear-gradient(120deg, rgba(255, 247, 252, 0.96), rgba(247, 182, 210, 0.35));
-  border-bottom: 1px solid #efb8d6;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.96), rgba(244, 239, 232, 0.9));
+  border-bottom: 1px solid #ddd7cf;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -109,9 +110,9 @@ img {
 
 .menu-toggle {
   display: none;
-  border: 1px solid #e9cfd9;
+  border: 1px solid #d6d6d6;
   background: #fff;
-  color: #74435b;
+  color: #4f545a;
   border-radius: 10px;
   padding: 8px 12px;
 }
@@ -152,7 +153,7 @@ img {
   display: inline-grid;
   place-items: center;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--berry-500), #cf7a53);
+  background: linear-gradient(135deg, var(--btn-gray-600), var(--btn-gray-700));
   color: #fff;
   font-size: 0.85rem;
 }
@@ -168,7 +169,7 @@ img {
 
 .search-field {
   width: 100%;
-  border: 1px solid #ebd7df;
+  border: 1px solid #d7d7d7;
   border-radius: 10px;
   padding: 9px 11px;
   background: #fff;
@@ -205,8 +206,8 @@ img {
 }
 
 .hero {
-  background: linear-gradient(125deg, #fff8fc 0%, var(--pink-baby) 44%, var(--pink-soft) 100%);
-  border: 1px solid #efb4d4;
+  background: linear-gradient(125deg, #ffffff 0%, #f7f3ed 44%, #ececec 100%);
+  border: 1px solid #ddd7cf;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 40px 28px;
@@ -228,8 +229,8 @@ img {
 }
 
 .hero-metric {
-  border: 1px solid #e8ddd4;
-  background: linear-gradient(135deg, #ffffff, #fff6ee);
+  border: 1px solid #ddd7cf;
+  background: linear-gradient(135deg, #ffffff, #f5f1ea);
   border-radius: 12px;
   padding: 10px 12px;
 }
@@ -241,7 +242,7 @@ img {
 }
 
 .hero-metric span {
-  color: #7a6570;
+  color: var(--muted);
   font-size: 0.86rem;
 }
 
@@ -360,7 +361,7 @@ img {
 
 .shop-bag__summary {
   margin: 10px 0 0;
-  color: #7a6570;
+  color: var(--muted);
   font-size: 0.95rem;
 }
 
@@ -406,7 +407,7 @@ img {
   height: 56px;
   object-fit: cover;
   border-radius: 12px;
-  background: #fff7fa;
+  background: #f5f5f5;
 }
 
 .shop-bag__item h3 {
@@ -421,7 +422,7 @@ img {
 
 .shop-bag__line-meta,
 .shop-bag__line-total {
-  color: #7a6570;
+  color: var(--muted);
 }
 
 .shop-bag__line-total {
@@ -463,13 +464,13 @@ img {
 
 .shop-bag__empty {
   margin: 0;
-  color: #7a6570;
+  color: var(--muted);
 }
 
 .shop-bag__note {
   margin: 0;
   font-size: 0.9rem;
-  color: #7a6570;
+  color: var(--muted);
   flex: 1;
 }
 
@@ -480,7 +481,7 @@ img {
   height: 28px;
   margin-right: 8px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--teal-400), #68a761);
+  background: linear-gradient(135deg, var(--btn-gray-600), var(--btn-gray-700));
   color: #fff;
   font-weight: 700;
 }
@@ -517,8 +518,8 @@ img {
 }
 
 .site-footer {
-  background: linear-gradient(125deg, #fff5fb, var(--pink-baby));
-  border-top: 1px solid #eeb6d4;
+  background: linear-gradient(125deg, #ffffff, #f4efe8);
+  border-top: 1px solid #ddd7cf;
   padding: 22px 0;
 }
 
@@ -533,7 +534,7 @@ img {
 
 .entry-meta {
   font-size: 0.9rem;
-  color: #7a6570;
+  color: var(--muted);
 }
 
 .flower-gallery {
@@ -578,7 +579,7 @@ img {
 .home-highlight {
   border: 1px solid #ebddd3;
   border-radius: 12px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 251, 249, 0.78));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(236, 236, 236, 0.9));
   padding: 16px;
 }
 
@@ -599,7 +600,7 @@ img {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  background: linear-gradient(140deg, #fff8ee, #f2fbf9);
+  background: linear-gradient(140deg, #f7f3ed, #ececec);
 }
 
 .shop-filters__field {
